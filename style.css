@@ -119,17 +119,24 @@ strong { color: #4a505f; font-weight: 700; }
 .ln-l { left: 3%; height: clamp(120px, 24vh, 210px); }
 .ln-r { right: 3%; height: clamp(120px, 24vh, 210px); animation-delay: -2s; }
 
+/* The cover never scrolls: the button is pinned to the bottom of the screen
+   and the content above it shrinks to fit whatever height the phone has. */
+.cover { --cta-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(18px, 4.5vh, 44px)); }
 .cover-inner {
   position: relative; z-index: 5;
-  flex: 1; width: 100%;
+  flex: 1; width: 100%; min-height: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center;
-  padding: clamp(84px, 17vh, 150px) 16px clamp(130px, 22vh, 210px);
+  padding: clamp(64px, 13vh, 140px) 16px calc(var(--cta-bottom) + 74px);
 }
-.cover-inner > .monogram { margin-bottom: clamp(14px, 3vh, 26px); animation: rise 1s .1s both; }
-.cover-inner > * { animation: rise 1s both; }
+.cover-inner > .monogram { margin-bottom: clamp(12px, 2.6vh, 24px); animation: rise 1s .1s both; }
+.cover-inner > * { animation: rise 1s both; flex-shrink: 0; }
+.cover-cta {
+  position: absolute; left: 0; right: 0; bottom: var(--cta-bottom); z-index: 6;
+  display: flex; justify-content: center; padding: 0 16px;
+}
 .cover-photo {
-  width: clamp(112px, 19vh, 168px); height: clamp(112px, 19vh, 168px);
+  width: clamp(104px, 20vh, 172px); height: clamp(104px, 20vh, 172px);
   margin: 4px auto 0;
   box-shadow: 0 0 0 4px #fff, 0 0 0 6px var(--crimson), 0 0 34px rgba(194, 50, 79, .35);
 }
@@ -139,7 +146,6 @@ strong { color: #4a505f; font-weight: 700; }
 .cc-role { font-size: 10px; letter-spacing: .32em; font-weight: 700; text-transform: uppercase; color: var(--crimson); padding-left: .32em; }
 .cc-heart { color: var(--crimson); font-size: 20px; animation: heartbeat 1.4s ease-in-out infinite; }
 .cover-date { font-weight: 700; font-size: 17px; color: var(--brown); margin-top: 8px; }
-.cover-time { font-weight: 500; font-size: 14px; color: var(--crimson); letter-spacing: .06em; margin-top: 4px; }
 
 .invite-btn {
   margin-top: 8px;
@@ -507,16 +513,40 @@ section { position: relative; }
   .gallery { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* ---------- Short phones ---------- */
-@media (max-height: 700px) {
-  .cover-inner { padding-top: 70px; padding-bottom: 96px; }
-  .cover-inner .monogram { transform: scale(.72); margin-bottom: 0; }
-  .star-line { margin: 6px auto; }
+/* Use the smallest visible screen height (address bar showing) where the browser supports it */
+@supports (height: 1svh) {
+  .cover { --cta-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(18px, 4.5svh, 44px)); }
+  .cover-inner { padding-top: clamp(64px, 13svh, 140px); }
+  .cover-photo { width: clamp(104px, 20svh, 172px); height: clamp(104px, 20svh, 172px); }
+}
+
+/* ---------- Shorter screens: shrink the opening screen so it always fits ---------- */
+@media (max-height: 760px) {
+  .cover-inner > .monogram { width: 72px; height: 72px; font-size: 31px; margin-bottom: 14px; }
+  .cover-inner > .monogram svg { width: 88px; height: 44px; bottom: -10px; }
+  .cover-bottom { height: 150px; }
+  .cover-bottom .flower { width: min(38vw, 230px); }
+}
+@media (max-height: 660px) {
+  .cover-inner { padding-top: 58px; }
+  .cover-inner > .monogram { display: none; }
+  .cover .star-line { margin: 6px auto; }
   .cc-name { font-size: 19px; }
-  .cover-photo { width: 104px; height: 104px; }
   .cover-bottom { height: 120px; }
   .cover-bottom .flower { width: min(32vw, 200px); }
-  .cover .fl-tl, .cover .fl-tr { width: min(44vw, 260px); }
+  .cover .fl-tl, .cover .fl-tr { width: min(42vw, 250px); }
+  .ln-l, .ln-r { height: 120px; }
+}
+@media (max-height: 560px) {
+  .cover-inner { padding-top: 44px; }
+  .cover-inner > .star-line:first-of-type { display: none; }
+  .cover-photo { width: 92px; height: 92px; }
+  .cover-couple { margin-top: 6px; }
+  .cover-date { font-size: 15px; margin-top: 4px; }
+  .invite-btn { padding-top: 12px; padding-bottom: 12px; }
+  .cover .fl-tl, .cover .fl-tr { width: min(34vw, 200px); }
+  .ln-l, .ln-r { height: 96px; }
+  .cover-bottom .flower { width: min(26vw, 160px); }
 }
 
 /* ---------- "Reduce motion" setting ---------- */
